@@ -7,6 +7,9 @@ import (
 	"syscall"
 
 	"github.com/canyouhearthemusic/gravitum/internal/config"
+	"github.com/canyouhearthemusic/gravitum/internal/handler"
+	"github.com/canyouhearthemusic/gravitum/internal/repository"
+	"github.com/canyouhearthemusic/gravitum/internal/service"
 	"github.com/canyouhearthemusic/gravitum/pkg/httpserver"
 	"github.com/canyouhearthemusic/gravitum/pkg/logger"
 	"github.com/canyouhearthemusic/gravitum/pkg/postgres"
@@ -15,16 +18,24 @@ import (
 func Run(cfg *config.Config) {
 	l := logger.New(cfg.Log.Level)
 
-	pg, err := postgres.New(cfg.PG.URL)
+	pg, err := postgres.New(cfg.Database)
 	if err != nil {
 		l.Fatal("Postgres error: %s", err)
 	}
 	defer pg.Close()
 
-	server := httpserver.New(httpserver.Port(cfg.HTTP.Port))
-	server.Start()
+	repositories := repository.New(pg)
 
-	// Graceful shutdown
+	services := service.New(repositories)
+
+	server := httpserver.New(httpserver.Port(cfg.App.Port))
+
+	handlers := handler.New(services)
+	handlers.Register(server.App)
+
+	server.Start()
+	l.Info("Server started on port %s", cfg.App.Port)
+
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 

@@ -2,6 +2,8 @@ package config
 
 import (
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"
@@ -9,32 +11,36 @@ import (
 
 type (
 	Config struct {
-		App  App
-		HTTP HTTP
-		Log  Log
-		PG   PG
+		App      App
+		Log      Log
+		Database Database
 	}
 
 	App struct {
 		Name string `env:"APP_NAME,required"`
-	}
-
-	HTTP struct {
-		Port string `env:"HTTP_PORT,required"`
+		Port string `env:"APP_PORT,required"`
 	}
 
 	Log struct {
 		Level string `env:"LOG_LEVEL,required"`
 	}
 
-	PG struct {
-		URL string `env:"PG_URL,required"`
+	Database struct {
+		Host     string `env:"DB_HOST,required"`
+		Port     string `env:"DB_PORT,required"`
+		User     string `env:"DB_USER,required"`
+		Password string `env:"DB_PASSWORD,required"`
+		Name     string `env:"DB_NAME,required"`
 	}
 )
 
 func NewConfig() (*Config, error) {
-	if err := godotenv.Load(); err != nil {
-		return nil, fmt.Errorf("error loading .env file: %w", err)
+	err := godotenv.Load()
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return nil, fmt.Errorf("error loading .env file: %w", err)
+		}
+		log.Println("Warning: .env file not found, using environment variables")
 	}
 
 	cfg := new(Config)

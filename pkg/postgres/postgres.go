@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Masterminds/squirrel"
+	"github.com/canyouhearthemusic/gravitum/internal/config"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -15,6 +16,17 @@ const (
 	_defaultConnAttempts = 10
 	_defaultConnTimeout  = time.Second
 )
+
+func BuildDSN(dbConfig config.Database) string {
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		dbConfig.User,
+		dbConfig.Password,
+		dbConfig.Host,
+		dbConfig.Port,
+		dbConfig.Name,
+	)
+}
 
 type Postgres struct {
 	maxPoolSize  int
@@ -25,15 +37,13 @@ type Postgres struct {
 	Pool    *pgxpool.Pool
 }
 
-func New(url string, opts ...Configuration) (*Postgres, error) {
+func New(dbConfig config.Database) (*Postgres, error) {
+	url := BuildDSN(dbConfig)
+
 	pg := &Postgres{
 		maxPoolSize:  _defaultMaxPoolSize,
 		connAttempts: _defaultConnAttempts,
 		connTimeout:  _defaultConnTimeout,
-	}
-
-	for _, opt := range opts {
-		opt(pg)
 	}
 
 	pg.Builder = squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)

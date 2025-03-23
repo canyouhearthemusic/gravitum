@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	_ "github.com/canyouhearthemusic/gravitum/docs"
 	"github.com/canyouhearthemusic/gravitum/internal/app"
 	"github.com/canyouhearthemusic/gravitum/internal/config"
 )
