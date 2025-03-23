@@ -1,11 +1,11 @@
-package repository
+package postgres
 
 import (
 	"context"
 	"errors"
 	"fmt"
 
-	"github.com/canyouhearthemusic/gravitum/internal/entity"
+	"github.com/canyouhearthemusic/gravitum/internal/domain/user"
 	"github.com/canyouhearthemusic/gravitum/pkg/postgres"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -21,7 +21,7 @@ func NewUserRepository(db *postgres.Postgres) *UserRepository {
 	}
 }
 
-func (r *UserRepository) Create(ctx context.Context, user *entity.User) error {
+func (r *UserRepository) Create(ctx context.Context, user *user.Model) error {
 	sql, args, err := r.db.Builder.
 		Insert("users").
 		Columns("id", "username", "email", "first_name", "last_name", "created_at", "updated_at").
@@ -39,7 +39,7 @@ func (r *UserRepository) Create(ctx context.Context, user *entity.User) error {
 	return nil
 }
 
-func (r *UserRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.User, error) {
+func (r *UserRepository) GetByID(ctx context.Context, id uuid.UUID) (*user.Model, error) {
 	sql, args, err := r.db.Builder.
 		Select("id", "username", "email", "first_name", "last_name", "created_at", "updated_at").
 		From("users").
@@ -49,7 +49,7 @@ func (r *UserRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.Use
 		return nil, fmt.Errorf("failed to build SQL: %w", err)
 	}
 
-	user := new(entity.User)
+	user := new(user.Model)
 	err = r.db.Pool.QueryRow(ctx, sql, args...).Scan(
 		&user.ID,
 		&user.Username,
@@ -69,7 +69,7 @@ func (r *UserRepository) GetByID(ctx context.Context, id uuid.UUID) (*entity.Use
 	return user, nil
 }
 
-func (r *UserRepository) GetAll(ctx context.Context) ([]*entity.User, error) {
+func (r *UserRepository) GetAll(ctx context.Context) ([]*user.Model, error) {
 	sql, args, err := r.db.Builder.
 		Select("id", "username", "email", "first_name", "last_name", "created_at", "updated_at").
 		From("users").
@@ -85,9 +85,9 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]*entity.User, error) {
 	}
 	defer rows.Close()
 
-	var users []*entity.User
+	var users []*user.Model
 	for rows.Next() {
-		var user entity.User
+		var user user.Model
 		err = rows.Scan(
 			&user.ID,
 			&user.Username,
@@ -110,7 +110,7 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]*entity.User, error) {
 	return users, nil
 }
 
-func (r *UserRepository) Update(ctx context.Context, user *entity.User) error {
+func (r *UserRepository) Update(ctx context.Context, user *user.Model) error {
 	sql, args, err := r.db.Builder.
 		Update("users").
 		Set("username", user.Username).

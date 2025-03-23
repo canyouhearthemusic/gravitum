@@ -17,7 +17,7 @@ const (
 	_defaultConnTimeout  = time.Second
 )
 
-func BuildDSN(dbConfig config.Database) string {
+func BuildDSN(dbConfig *config.Database) string {
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		dbConfig.User,
@@ -37,7 +37,7 @@ type Postgres struct {
 	Pool    *pgxpool.Pool
 }
 
-func New(dbConfig config.Database) (*Postgres, error) {
+func New(dbConfig *config.Database) (*Postgres, error) {
 	url := BuildDSN(dbConfig)
 
 	pg := &Postgres{

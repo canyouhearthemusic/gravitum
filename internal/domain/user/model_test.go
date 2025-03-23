@@ -1,4 +1,4 @@
-package entity
+package user
 
 import (
 	"testing"
@@ -49,7 +49,7 @@ func TestNewUser(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			user, err := NewUser(tt.username, tt.email, tt.firstName, tt.lastName)
+			user, err := New(tt.username, tt.email, tt.firstName, tt.lastName)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewUser() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -76,7 +76,7 @@ func TestNewUser(t *testing.T) {
 }
 
 func TestUser_Update(t *testing.T) {
-	user, _ := NewUser("olduser", "old@example.com", "Old", "User")
+	user, _ := New("olduser", "old@example.com", "Old", "User")
 
 	tests := []struct {
 		name       string
@@ -85,7 +85,7 @@ func TestUser_Update(t *testing.T) {
 		firstName  string
 		lastName   string
 		wantErr    bool
-		wantResult *User
+		wantResult *Model
 	}{
 		{
 			name:      "Update all fields",
@@ -94,7 +94,7 @@ func TestUser_Update(t *testing.T) {
 			firstName: "New",
 			lastName:  "User",
 			wantErr:   false,
-			wantResult: &User{
+			wantResult: &Model{
 				ID:        user.ID,
 				Username:  "newuser",
 				Email:     "new@example.com",
@@ -109,7 +109,7 @@ func TestUser_Update(t *testing.T) {
 			firstName: "Updated",
 			lastName:  "",
 			wantErr:   false,
-			wantResult: &User{
+			wantResult: &Model{
 				ID:        user.ID,
 				Username:  "newuser",
 				Email:     "new@example.com",

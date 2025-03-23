@@ -18,13 +18,18 @@ import (
 func Run(cfg *config.Config) {
 	l := logger.New(cfg.Log.Level)
 
-	pg, err := postgres.New(cfg.Database)
+	pg, err := postgres.New(&cfg.Database)
 	if err != nil {
 		l.Fatal("Postgres error: %s", err)
 	}
 	defer pg.Close()
 
-	repositories := repository.New(pg)
+	repositories, err := repository.New(
+		repository.WithPostgresStore(pg),
+	)
+	if err != nil {
+		l.Fatal(err)
+	}
 
 	services := service.New(repositories)
 

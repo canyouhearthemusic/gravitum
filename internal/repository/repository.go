@@ -1,13 +1,21 @@
 package repository
 
-import "github.com/canyouhearthemusic/gravitum/pkg/postgres"
+import (
+	"github.com/canyouhearthemusic/gravitum/internal/domain/user"
+)
 
 type Repositories struct {
-	User *UserRepository
+	User user.Repository
 }
 
-func New(pg *postgres.Postgres) *Repositories {
-	return &Repositories{
-		User: NewUserRepository(pg),
+func New(cfgs ...Configuration) (*Repositories, error) {
+	repos := new(Repositories)
+
+	for _, cfg := range cfgs {
+		if err := cfg(repos); err != nil {
+			return nil, err
+		}
 	}
+
+	return repos, nil
 }

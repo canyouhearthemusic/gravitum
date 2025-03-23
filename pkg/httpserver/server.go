@@ -24,7 +24,7 @@ type Server struct {
 	shutdownTimeout time.Duration
 }
 
-func New(opts ...Configuration) *Server {
+func New(cfgs ...Configuration) *Server {
 	app := fiber.New(fiber.Config{
 		Prefork:      false,
 		ReadTimeout:  _defaultReadTimeout,
@@ -42,8 +42,8 @@ func New(opts ...Configuration) *Server {
 		shutdownTimeout: _defaultShutdownTimeout,
 	}
 
-	for _, opt := range opts {
-		opt(s)
+	for _, cfg := range cfgs {
+		cfg(s)
 	}
 
 	return s

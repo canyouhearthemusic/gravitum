@@ -1,4 +1,4 @@
-package entity
+package user
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type User struct {
+type Model struct {
 	ID        uuid.UUID `json:"id"`
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
@@ -17,8 +17,8 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func NewUser(username, email, firstName, lastName string) (*User, error) {
-	user := &User{
+func New(username, email, firstName, lastName string) (*Model, error) {
+	user := &Model{
 		Username:  username,
 		Email:     email,
 		FirstName: firstName,
@@ -31,7 +31,7 @@ func NewUser(username, email, firstName, lastName string) (*User, error) {
 	return user, nil
 }
 
-func (u *User) Update(username, email, firstName, lastName string) error {
+func (u *Model) Update(username, email, firstName, lastName string) error {
 	u.Username = username
 	u.Email = email
 	u.FirstName = firstName
@@ -45,7 +45,7 @@ func (u *User) Update(username, email, firstName, lastName string) error {
 	return nil
 }
 
-func (u *User) validate() error {
+func (u *Model) validate() error {
 	if u.Username == "" {
 		return errors.New("username is required")
 	}

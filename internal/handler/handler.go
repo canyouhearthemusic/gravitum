@@ -23,12 +23,6 @@ func New(services *service.Services) *Handler {
 func (h *Handler) Register(app *fiber.App) {
 	app.Get("/swagger/*", fiberSwagger.WrapHandler)
 
-	api := app.Group("/api/v1")
-	users := api.Group("/users")
-
-	users.Post("/", h.User.Create)
-	users.Get("/", h.User.GetAll)
-	users.Get("/:id", h.User.Get)
-	users.Put("/:id", h.User.Update)
-	users.Delete("/:id", h.User.Delete)
+	v1 := app.Group("/api/v1")
+	v1.Mount("/users", h.User.Router())
 }

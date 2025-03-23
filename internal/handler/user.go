@@ -3,33 +3,31 @@ package handler
 import (
 	"errors"
 
-	"github.com/canyouhearthemusic/gravitum/internal/service"
+	"github.com/canyouhearthemusic/gravitum/internal/domain/user"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
-type userCreateRequest struct {
-	Username  string `json:"username"`
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-}
-
-type userUpdateRequest struct {
-	Username  string `json:"username"`
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-}
-
 type UserHandler struct {
-	userService service.UserServiceInterface
+	userService user.Service
 }
 
-func NewUserHandler(userService service.UserServiceInterface) *UserHandler {
+func NewUserHandler(userService user.Service) *UserHandler {
 	return &UserHandler{
 		userService: userService,
 	}
+}
+
+func (h *UserHandler) Router() *fiber.App {
+	router := fiber.New()
+
+	router.Get("/", h.getAll)
+	router.Post("/", h.create)
+	router.Get("/:id", h.get)
+	router.Put("/:id", h.update)
+	router.Delete("/:id", h.delete)
+
+	return router
 }
 
 // @Summary Create a new user
@@ -37,13 +35,13 @@ func NewUserHandler(userService service.UserServiceInterface) *UserHandler {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param request body userCreateRequest true "User information"
-// @Success 201 {object} entity.User
+// @Param request body user.CreateRequest true "User information"
+// @Success 201 {object} user.Model
 // @Failure 400 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Router /users [post]
-func (h *UserHandler) Create(c *fiber.Ctx) error {
-	var req userCreateRequest
+func (h *UserHandler) create(c *fiber.Ctx) error {
+	var req user.CreateRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(errorResponse{Error: "invalid request body"})
 	}
@@ -60,10 +58,10 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 // @Description Get a list of all users
 // @Tags users
 // @Produce json
-// @Success 200 {array} entity.User
+// @Success 200 {array} user.Model
 // @Failure 500 {object} errorResponse
 // @Router /users [get]
-func (h *UserHandler) GetAll(c *fiber.Ctx) error {
+func (h *UserHandler) getAll(c *fiber.Ctx) error {
 	users, err := h.userService.GetAllUsers(c.Context())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(errorResponse{Error: err.Error()})
@@ -77,12 +75,12 @@ func (h *UserHandler) GetAll(c *fiber.Ctx) error {
 // @Tags users
 // @Produce json
 // @Param id path string true "User ID"
-// @Success 200 {object} entity.User
+// @Success 200 {object} user.Model
 // @Failure 400 {object} errorResponse
 // @Failure 404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Router /users/{id} [get]
-func (h *UserHandler) Get(c *fiber.Ctx) error {
+func (h *UserHandler) get(c *fiber.Ctx) error {
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(errorResponse{Error: "invalid user ID"})
@@ -105,19 +103,19 @@ func (h *UserHandler) Get(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "User ID"
-// @Param request body userUpdateRequest true "User information to update"
-// @Success 200 {object} entity.User
+// @Param request body user.UpdateRequest true "User information to update"
+// @Success 200 {object} user.Model
 // @Failure 400 {object} errorResponse
 // @Failure 404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Router /users/{id} [put]
-func (h *UserHandler) Update(c *fiber.Ctx) error {
+func (h *UserHandler) update(c *fiber.Ctx) error {
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(errorResponse{Error: "invalid user ID"})
 	}
 
-	var req userUpdateRequest
+	var req user.UpdateRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(errorResponse{Error: "invalid request body"})
 	}
@@ -143,7 +141,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 // @Failure 404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Router /users/{id} [delete]
-func (h *UserHandler) Delete(c *fiber.Ctx) error {
+func (h *UserHandler) delete(c *fiber.Ctx) error {
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(errorResponse{Error: "invalid user ID"})
