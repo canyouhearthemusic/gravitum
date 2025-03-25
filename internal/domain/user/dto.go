@@ -1,13 +1,13 @@
 package user
 
-type CreateRequest struct {
+type CreateDTO struct {
 	Username  string `json:"username"`
 	Email     string `json:"email"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 }
 
-type UpdateRequest struct {
+type UpdateDTO struct {
 	Username  string `json:"username"`
 	Email     string `json:"email"`
 	FirstName string `json:"first_name"`

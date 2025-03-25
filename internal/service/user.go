@@ -16,18 +16,18 @@ func NewUserService(repo user.Repository) *UserService {
 	return &UserService{repo: repo}
 }
 
-func (s *UserService) CreateUser(ctx context.Context, username, email, firstName, lastName string) (*user.Model, error) {
-	user, err := user.New(username, email, firstName, lastName)
+func (s *UserService) CreateUser(ctx context.Context, dto *user.CreateDTO) error {
+	user, err := user.New(dto)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create user entity: %w", err)
+		return fmt.Errorf("failed to create user entity: %w", err)
 	}
 
 	err = s.repo.Create(ctx, user)
 	if err != nil {
-		return nil, fmt.Errorf("failed to save user: %w", err)
+		return fmt.Errorf("failed to save user: %w", err)
 	}
 
-	return user, nil
+	return nil
 }
 
 func (s *UserService) GetUser(ctx context.Context, id uuid.UUID) (*user.Model, error) {
@@ -48,23 +48,23 @@ func (s *UserService) GetAllUsers(ctx context.Context) ([]*user.Model, error) {
 	return users, nil
 }
 
-func (s *UserService) UpdateUser(ctx context.Context, id uuid.UUID, username, email, firstName, lastName string) (*user.Model, error) {
+func (s *UserService) UpdateUser(ctx context.Context, id uuid.UUID, dto *user.UpdateDTO) error {
 	user, err := s.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to find user: %w", err)
+		return fmt.Errorf("failed to find user: %w", err)
 	}
 
-	err = user.Update(username, email, firstName, lastName)
+	err = user.Update(dto)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update user data: %w", err)
+		return fmt.Errorf("failed to update user data: %w", err)
 	}
 
 	err = s.repo.Update(ctx, user)
 	if err != nil {
-		return nil, fmt.Errorf("failed to save user changes: %w", err)
+		return fmt.Errorf("failed to save user changes: %w", err)
 	}
 
-	return user, nil
+	return nil
 }
 
 func (s *UserService) DeleteUser(ctx context.Context, id uuid.UUID) error {

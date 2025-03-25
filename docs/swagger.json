@@ -51,7 +51,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.CreateRequest"
+                            "$ref": "#/definitions/user.CreateDTO"
                         }
                     }
                 ],
@@ -149,7 +149,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.UpdateRequest"
+                            "$ref": "#/definitions/user.UpdateDTO"
                         }
                     }
                 ],
@@ -233,7 +233,7 @@
                 }
             }
         },
-        "user.CreateRequest": {
+        "user.CreateDTO": {
             "type": "object",
             "properties": {
                 "email": {
@@ -276,7 +276,7 @@
                 }
             }
         },
-        "user.UpdateRequest": {
+        "user.UpdateDTO": {
             "type": "object",
             "properties": {
                 "email": {

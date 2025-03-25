@@ -24,8 +24,8 @@ func NewUserRepository(db *postgres.Postgres) *UserRepository {
 func (r *UserRepository) Create(ctx context.Context, user *user.Model) error {
 	sql, args, err := r.db.Builder.
 		Insert("users").
-		Columns("id", "username", "email", "first_name", "last_name", "created_at", "updated_at").
-		Values(user.ID, user.Username, user.Email, user.FirstName, user.LastName, user.CreatedAt, user.UpdatedAt).
+		Columns("username", "email", "first_name", "last_name").
+		Values(user.Username, user.Email, user.FirstName, user.LastName).
 		ToSql()
 	if err != nil {
 		return fmt.Errorf("failed to build SQL: %w", err)

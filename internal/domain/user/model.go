@@ -17,12 +17,12 @@ type Model struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func New(username, email, firstName, lastName string) (*Model, error) {
+func New(dto *CreateDTO) (*Model, error) {
 	user := &Model{
-		Username:  username,
-		Email:     email,
-		FirstName: firstName,
-		LastName:  lastName}
+		Username:  dto.Username,
+		Email:     dto.Email,
+		FirstName: dto.FirstName,
+		LastName:  dto.LastName}
 
 	if err := user.validate(); err != nil {
 		return nil, err
@@ -31,11 +31,11 @@ func New(username, email, firstName, lastName string) (*Model, error) {
 	return user, nil
 }
 
-func (u *Model) Update(username, email, firstName, lastName string) error {
-	u.Username = username
-	u.Email = email
-	u.FirstName = firstName
-	u.LastName = lastName
+func (u *Model) Update(dto *UpdateDTO) error {
+	u.Username = dto.Username
+	u.Email = dto.Email
+	u.FirstName = dto.FirstName
+	u.LastName = dto.LastName
 	u.UpdatedAt = time.Now()
 
 	if err := u.validate(); err != nil {

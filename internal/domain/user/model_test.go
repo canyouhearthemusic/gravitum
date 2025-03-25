@@ -49,7 +49,13 @@ func TestNewUser(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			user, err := New(tt.username, tt.email, tt.firstName, tt.lastName)
+			dto := &CreateDTO{
+				Username:  tt.username,
+				Email:     tt.email,
+				FirstName: tt.firstName,
+				LastName:  tt.lastName,
+			}
+			user, err := New(dto)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewUser() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -76,7 +82,13 @@ func TestNewUser(t *testing.T) {
 }
 
 func TestUser_Update(t *testing.T) {
-	user, _ := New("olduser", "old@example.com", "Old", "User")
+	dto := &CreateDTO{
+		Username:  "olduser",
+		Email:     "old@example.com",
+		FirstName: "Old",
+		LastName:  "User",
+	}
+	user, _ := New(dto)
 
 	tests := []struct {
 		name       string
@@ -129,7 +141,13 @@ func TestUser_Update(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := user.Update(tt.username, tt.email, tt.firstName, tt.lastName)
+			dto := &UpdateDTO{
+				Username:  tt.username,
+				Email:     tt.email,
+				FirstName: tt.firstName,
+				LastName:  tt.lastName,
+			}
+			err := user.Update(dto)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("User.Update() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -146,6 +164,9 @@ func TestUser_Update(t *testing.T) {
 				}
 				if user.LastName != tt.wantResult.LastName {
 					t.Errorf("User.Update() lastName = %v, want %v", user.LastName, tt.wantResult.LastName)
+				}
+				if user.UpdatedAt.IsZero() {
+					t.Errorf("User.Update() UpdatedAt should not be zero")
 				}
 			}
 		})

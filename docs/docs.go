@@ -62,7 +62,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.CreateRequest"
+                            "$ref": "#/definitions/user.CreateDTO"
                         }
                     }
                 ],
@@ -160,7 +160,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.UpdateRequest"
+                            "$ref": "#/definitions/user.UpdateDTO"
                         }
                     }
                 ],
@@ -244,7 +244,7 @@ const docTemplate = `{
                 }
             }
         },
-        "user.CreateRequest": {
+        "user.CreateDTO": {
             "type": "object",
             "properties": {
                 "email": {
@@ -287,7 +287,7 @@ const docTemplate = `{
                 }
             }
         },
-        "user.UpdateRequest": {
+        "user.UpdateDTO": {
             "type": "object",
             "properties": {
                 "email": {

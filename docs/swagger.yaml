@@ -4,7 +4,7 @@ definitions:
       error:
         type: string
     type: object
-  user.CreateRequest:
+  user.CreateDTO:
     properties:
       email:
         type: string
@@ -32,7 +32,7 @@ definitions:
       username:
         type: string
     type: object
-  user.UpdateRequest:
+  user.UpdateDTO:
     properties:
       email:
         type: string
@@ -75,7 +75,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/user.CreateRequest'
+          $ref: '#/definitions/user.CreateDTO'
       produces:
       - application/json
       responses:
@@ -168,7 +168,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/user.UpdateRequest'
+          $ref: '#/definitions/user.UpdateDTO'
       produces:
       - application/json
       responses:
